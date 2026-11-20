@@ -1,5 +1,5 @@
 /**
- * SP7 음색 슬롯 예약 — Google Apps Script 백엔드
+ * SP7 음색 슬롯 점유 — Google Apps Script 백엔드
  *
  * 시트 "slots" 에 칸 하나가 한 줄로 저장됩니다.
  * 열: kb | slot | name | purpose | start | end | pinHash | updatedAt | batch
@@ -7,10 +7,10 @@
  *   slot  : A1 ~ D16
  *   start/end : YYYY-MM-DD (텍스트)
  *   pinHash   : PIN의 해시값 (PIN 원문은 저장하지 않음)
- *   batch     : 한 번에 함께 예약한 칸들이 공유하는 묶음 번호
+ *   batch     : 한 번에 함께 점유한 칸들이 공유하는 묶음 번호
  *
  * 관리자 PIN: [프로젝트 설정 → 스크립트 속성]에 ADMIN_PIN 을 넣으면
- *            그 PIN으로 모든 예약을 수정·취소할 수 있습니다.
+ *            그 PIN으로 모든 점유를 수정·취소할 수 있습니다.
  */
 
 const SHEET = 'slots';
@@ -57,7 +57,7 @@ function reserve(r, slots) {
   if (v) return { ok: false, error: v };
   const index = rowIndex();
   const taken = slots.filter(s => index[s.kb + '_' + s.slot]);
-  if (taken.length) return { ok: false, error: '이미 예약된 칸이 있어요: ' + names(taken), rows: listRows() };
+  if (taken.length) return { ok: false, error: '이미 점유된 칸이 있어요: ' + names(taken), rows: listRows() };
   const batch = String(r.batch || Utilities.getUuid()).replace(/[^\w-]/g, '').slice(0, 24);
   const now = new Date().toISOString(), h = hash(r.pin);
   const data = slots.map(s => [s.kb, s.slot, clean(r.name), clean(r.purpose), r.start, r.end, h, now, batch]);
@@ -70,7 +70,7 @@ function update(r, slots) {
   const v = validate(r, false);
   if (v) return { ok: false, error: v };
   const found = findAll(slots);
-  if (found.missing.length) return { ok: false, error: '예약이 없어진 칸이 있어요: ' + names(found.missing), rows: listRows() };
+  if (found.missing.length) return { ok: false, error: '점유가 없어진 칸이 있어요: ' + names(found.missing), rows: listRows() };
   if (found.rows.some(x => !pinOk(r.pin, x.values[C.pin]))) return { ok: false, error: 'PIN이 맞지 않아요.' };
   const sh = sheet(), now = new Date().toISOString();
   found.rows.forEach(x => sh.getRange(x.index, C.name + 1, 1, 4).setValues([[clean(r.name), clean(r.purpose), r.start, r.end]]));
@@ -85,7 +85,7 @@ function cancel(r, slots) {
   return { ok: true, rows: listRows() };
 }
 
-/** 기간이 지난 예약은 PIN 없이 누구나 비울 수 있음 */
+/** 기간이 지난 점유는 PIN 없이 누구나 비울 수 있음 */
 function clearExpired(slots) {
   const found = findAll(slots), t = today();
   const live = found.rows.filter(x => !(String(x.values[C.end]) < t));

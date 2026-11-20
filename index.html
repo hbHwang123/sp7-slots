@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SP7 슬롯 예약 현황</title>
+<title>SP7 슬롯 점유 현황</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -11,12 +11,12 @@
    IDEA: SP7 앞판의 4×4 버튼 뱅크 — 칸이 LED처럼 켜진다.
    PICTURE: 키보드 패널 하나에 A~D 네 그룹 격자, 칸마다 상태색과 이름.
    COLOUR and TYPE: 차콜 패널, 사용 중 버밀리언, 예정 블루, 만료 빗금 회색 / Barlow Condensed 번호 + Noto Sans KR.
-   LAYOUT: 제목·기체 탭·요약 → 패널 → 예약 목록 표. 600px 아래에선 그룹 2열, 다시 1열. */
+   LAYOUT: 제목·기체 탭·요약 → 패널 → 점유 목록 표. 600px 아래에선 그룹 2열, 다시 1열. */
 :root{color-scheme:light dark;
 --bg:light-dark(#f3f1ee,#121212);--ink:light-dark(#1b1b1b,#ecebe8);--mute:light-dark(#6b6862,#9b9893);
 --card:light-dark(#ffffff,#1c1c1c);--line:light-dark(#dedad4,#2e2e2e);
 --panel:#232323;--panel2:#2c2c2c;--key:#383838;--keyink:#bdbab4;
---use:#ff4a1c;--soon:#3d8bff;--exp:#8a8780;--free:#3a3a3a;--focus:#ffb000}
+--use:#ff4a1c;--p0:#f4b4ab;--p1:#f3dc93;--p2:#b5ddb9;--p3:#aecbf2;--exp:#8a8780;--free:#3a3a3a;--focus:#ffb000}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
@@ -30,7 +30,8 @@ h1{font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 0 6px;text-wrap:bal
 .sum{display:flex;flex-wrap:wrap;gap:8px 20px;margin:0 0 14px;font-size:15px}
 .sum b{font-family:"Barlow Condensed",sans-serif;font-size:22px;margin-right:4px}
 .dot{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:0}
-.d-use{background:var(--use)}.d-soon{background:var(--soon)}.d-exp{background:repeating-linear-gradient(45deg,#8a8780 0 3px,#5a5853 3px 6px)}.d-free{background:var(--free);outline:1px solid #555}
+.d-use{background:conic-gradient(var(--p0) 0 25%,var(--p1) 0 50%,var(--p2) 0 75%,var(--p3) 0)}.d-r0{background:var(--p0)}.d-r1{background:var(--p1)}.d-r2{background:var(--p2)}.d-r3{background:var(--p3)}
+.legend .d-r0,.legend .d-r1,.legend .d-r2{margin-right:2px}.d-exp{background:repeating-linear-gradient(45deg,#8a8780 0 3px,#5a5853 3px 6px)}.d-free{background:var(--free);outline:1px solid #555}
 .panel{background:linear-gradient(#2a2a2a,var(--panel));border-radius:18px;padding:clamp(14px,2.4vw,26px);box-shadow:0 1px 0 #444 inset,0 18px 40px -20px rgba(0,0,0,.6);color:#eee}
 .phead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;font-family:"Barlow Condensed",sans-serif;letter-spacing:.04em}
 .phead strong{font-size:22px}.phead span{color:#9a978f;font-size:15px}
@@ -44,8 +45,8 @@ h1{font-size:clamp(28px,4.4vw,44px);line-height:1.1;margin:0 0 6px;text-wrap:bal
 .slot:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .slot .n{font:700 15px/1 "Barlow Condensed",sans-serif}
 .slot .who{font-size:11.5px;line-height:1.2;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%}
-.slot.use{background:var(--use);color:#fff;box-shadow:0 2px 0 #9b2a0e,0 0 14px -2px rgba(255,74,28,.7)}
-.slot.soon{background:var(--soon);color:#fff;box-shadow:0 2px 0 #1e4f9e,0 0 12px -3px rgba(61,139,255,.7)}
+.slot.use{color:#2b2622;box-shadow:0 2px 0 rgba(0,0,0,.35),0 0 12px -4px var(--glow)}
+.slot.use.r0{background:var(--p0);--glow:var(--p0)}.slot.use.r1{background:var(--p1);--glow:var(--p1)}.slot.use.r2{background:var(--p2);--glow:var(--p2)}.slot.use.r3{background:var(--p3);--glow:var(--p3)}
 .slot.exp{background:repeating-linear-gradient(45deg,#6f6c66 0 6px,#5c5a55 6px 12px);color:#f0eee9}
 .slot.sel{background:#f4f1ea;color:#1b1b1b;box-shadow:0 0 0 3px #fff,0 0 16px -2px rgba(255,255,255,.55)}
 .slot.sel::after{content:"✓";position:absolute;top:4px;right:6px;font-weight:700;font-size:14px;color:var(--use)}
@@ -76,7 +77,7 @@ td.nw{white-space:nowrap}
 tr:last-child td{border-bottom:0}
 tbody tr{cursor:pointer}tbody tr:hover{background:light-dark(#f7f5f2,#232323)}
 .tag{display:inline-block;padding:1px 8px;border-radius:99px;font-size:13px;font-weight:700;color:#fff;white-space:nowrap}
-.t-use{background:var(--use)}.t-soon{background:var(--soon)}.t-exp{background:var(--exp)}
+.t-use{background:#4a4743}.t-exp{background:var(--exp)}
 .empty{padding:24px;text-align:center;color:var(--mute)}
 /* dialog */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.5);display:grid;place-items:center;padding:16px;z-index:10}
@@ -112,8 +113,8 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <main class="band">
   <div class="top">
     <div>
-      <h1>SP7 음색 슬롯 예약 현황</h1>
-      <p class="sub">빈 칸을 여러 개 눌러 고른 뒤 한 번에 예약하세요. 신기체·구기체 각 64칸 (그룹 A~D × 16칸)</p>
+      <h1>SP7 음색 슬롯 점유 현황</h1>
+      <p class="sub">빈 칸을 여러 개 눌러 고른 뒤 한 번에 점유하세요. 점유·수정·취소는 반영까지 몇 초 걸릴 수 있어요.</p>
     </div>
     <div class="tabs" role="tablist" aria-label="키보드 선택">
       <button role="tab" id="tab-new" data-kb="new" aria-selected="true">신기체</button>
@@ -129,19 +130,18 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
     <div class="phead"><strong id="pname">SP7 신기체</strong><span id="pcount"></span></div>
     <div class="groups" id="groups"></div>
     <div class="legend">
-      <span><i class="dot d-use"></i>사용 중</span>
-      <span><i class="dot d-soon"></i>예약 (시작 전)</span>
+      <span><i class="dot d-r0"></i><i class="dot d-r1"></i><i class="dot d-r2"></i><i class="dot d-r3"></i>사용 중</span>
       <span><i class="dot d-exp"></i>기간 만료</span>
       <span><i class="dot d-free"></i>비어 있음</span>
     </div>
   </section>
-  <p class="note">예약할 때 정한 4자리 PIN으로 수정·취소해요. 기간 만료 칸은 누구나 "비우기"로 정리할 수 있어요. 현황은 30초마다 자동으로 새로 불러와요.</p>
+  <p class="note">점유할 때 정한 4자리 PIN으로 수정·취소해요. 기간 만료 칸은 누구나 "비우기"로 정리할 수 있어요. 현황은 30초마다 자동으로 새로 불러와요.</p>
 </main>
 
 <section class="band" aria-labelledby="lh">
-  <h2 id="lh">예약 목록</h2>
+  <h2 id="lh">점유 목록</h2>
   <div class="tools">
-    <input type="search" id="q" placeholder="이름·목적·슬롯 검색" aria-label="예약 검색">
+    <input type="search" id="q" placeholder="이름·목적·슬롯 검색" aria-label="점유 검색">
     <label><input type="checkbox" id="allkb" checked> 두 대 모두 보기</label>
     <label><input type="checkbox" id="hideexp"> 만료 숨기기</label>
   </div>
@@ -151,7 +151,7 @@ table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-bl
 <div class="bar" id="bar" role="region" aria-label="선택한 칸" hidden>
   <div class="txt" id="bartxt"></div>
   <button class="btn" id="bclear">선택 해제</button>
-  <button class="btn pri" id="bres">예약하기</button>
+  <button class="btn pri" id="bres">점유하기</button>
 </div>
 
 <div class="ov" id="ov" hidden>
@@ -174,7 +174,7 @@ const API={
       const res=await fetch(API_URL,{cache:'no-store'});const j=await res.json();
       if(!j.ok)throw new Error(j.error);
       setRows(j.rows);status('');
-    }catch(e){if(!quiet||!ready)status('예약 정보를 불러오지 못했어요. 잠시 후 새로고침해 주세요.')}
+    }catch(e){if(!quiet||!ready)status('점유 정보를 불러오지 못했어요. 잠시 후 새로고침해 주세요.')}
   },
   async send(body){
     if(!API_URL)return{ok:false,error:'아직 시트와 연결되지 않아 저장할 수 없어요.'};
@@ -212,8 +212,8 @@ const fmt=s=>s?s.slice(2).replace(/-/g,'.'):'';
 const key=(kb,slot)=>kb+'_'+slot;
 const split=k=>{const i=k.indexOf('_');return{kb:k.slice(0,i),slot:k.slice(i+1)}};
 const slotNum=s=>GROUPS.indexOf(s[0])*100+ +s.slice(1);
-function state(r){if(!r)return'free';const t=today();if(r.end&&r.end<t)return'exp';if(r.start&&r.start>t)return'soon';return'use'}
-const LABEL={use:'사용 중',soon:'예약',exp:'기간 만료',free:'비어 있음'};
+function state(r){if(!r)return'free';if(r.end&&r.end<today())return'exp';return'use'}
+const LABEL={use:'사용 중',exp:'기간 만료',free:'비어 있음'};
 const pinField=(id,label)=>`<label class="fld"><span>${label}</span><input id="${id}" class="pin" type="password" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required></label>`;
 
 /** 칸 목록을 "신기체 A1, A2 · 구기체 B3" 형태로 */
@@ -232,14 +232,14 @@ function setRows(list){
   for(const k of [...sel])if(rows[k])sel.delete(k);
   render();
 }
-/** 같은 묶음(batch)으로 함께 예약된 칸들 */
+/** 같은 묶음(batch)으로 함께 점유된 칸들 */
 function companions(k){const r=rows[k];if(!r||!r.batch)return[k];return Object.keys(rows).filter(x=>rows[x].batch===r.batch)}
 
 /* ---- 화면 그리기 ---- */
 function render(){
   $('#pname').textContent=KB[cur];
   document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.kb===cur));
-  const c={use:0,soon:0,exp:0,free:0};
+  const c={use:0,exp:0,free:0};
   $('#groups').innerHTML=GROUPS.map(g=>{
     let used=0,free=0,picked=0;
     const cells=Array.from({length:16},(_,i)=>{
@@ -247,13 +247,13 @@ function render(){
       if(st!=='free')used++;else{free++;if(sel.has(k))picked++}
       const on=sel.has(k);
       const lab=`${slot} ${on?'선택됨':LABEL[st]}${r?', '+r.name:''}`;
-      return `<button class="slot ${st}${on?' sel':''}" data-slot="${slot}" aria-pressed="${st==='free'?on:'false'}" aria-label="${esc(lab)}"><span class="n">${slot}</span><span class="who">${r?esc(r.name):''}</span></button>`;
+      return `<button class="slot ${st} r${Math.floor(i/4)}${on?' sel':''}" data-slot="${slot}" aria-pressed="${st==='free'?on:'false'}" aria-label="${esc(lab)}"><span class="n">${slot}</span><span class="who">${r?esc(r.name):''}</span></button>`;
     }).join('');
     const all=free>0&&picked===free;
     return `<div class="grp"><h3>그룹 ${g}<small>${used}/16</small></h3><div class="grid">${cells}</div>${free?`<button class="gsel" data-g="${g}">${all?'선택 해제':'빈 칸 모두 선택'}</button>`:'<p class="gfull">빈 칸 없음</p>'}</div>`;
   }).join('');
   $('#pcount').textContent=`${64-c.free} / 64 칸 점유`;
-  $('#sum').innerHTML=`<span><i class="dot d-use"></i><b>${c.use}</b>사용 중</span><span><i class="dot d-soon"></i><b>${c.soon}</b>예약</span><span><i class="dot d-exp"></i><b>${c.exp}</b>기간 만료</span><span><i class="dot d-free"></i><b>${c.free}</b>비어 있음</span>`;
+  $('#sum').innerHTML=`<span><i class="dot d-use"></i><b>${c.use}</b>사용 중</span><span><i class="dot d-exp"></i><b>${c.exp}</b>기간 만료</span><span><i class="dot d-free"></i><b>${c.free}</b>비어 있음</span>`;
   renderBar();renderList();
 }
 function renderBar(){
@@ -264,7 +264,7 @@ function renderBar(){
 }
 function renderList(){
   const q=$('#q').value.trim().toLowerCase(),all=$('#allkb').checked,hx=$('#hideexp').checked;
-  const order={use:0,soon:1,exp:2};
+  const order={use:0,exp:1};
   /* 같은 묶음은 한 줄로 */
   const groups={};
   Object.entries(rows).forEach(([k,r])=>{const g=r.batch?'b:'+r.batch:'k:'+k;(groups[g]=groups[g]||{r,keys:[]}).keys.push(k)});
@@ -274,7 +274,7 @@ function renderList(){
   }).filter(x=>x.keys.length&&!(hx&&x.st==='exp'))
     .filter(x=>!q||[x.r.name,x.r.purpose,x.txt].join(' ').toLowerCase().includes(q))
     .sort((a,b)=>order[a.st]-order[b.st]||(a.r.end||'').localeCompare(b.r.end||'')||a.txt.localeCompare(b.txt));
-  if(!list.length){$('#list').innerHTML=`<p class="empty">${Object.keys(rows).length?'조건에 맞는 예약이 없어요.':'아직 예약이 없어요. 위 패널에서 빈 칸을 골라 첫 예약을 해 보세요.'}</p>`;return}
+  if(!list.length){$('#list').innerHTML=`<p class="empty">${Object.keys(rows).length?'조건에 맞는 점유가 없어요.':'아직 점유가 없어요. 위 패널에서 빈 칸을 골라 첫 점유를 해 보세요.'}</p>`;return}
   $('#list').innerHTML=`<table class="stack"><thead><tr><th>상태</th><th>슬롯</th><th>칸 수</th><th>사용자</th><th>목적</th><th>기간</th></tr></thead><tbody>${
     list.map(x=>`<tr data-k="${esc(x.keys[0])}"><td><span class="tag t-${x.st}">${LABEL[x.st]}</span></td><td>${esc(x.txt)}</td><td class="nw">${x.keys.length}칸</td><td>${esc(x.r.name)}</td><td>${esc(x.r.purpose)}</td><td class="nw">${fmt(x.r.start)} ~ ${fmt(x.r.end)}</td></tr>`).join('')
   }</tbody></table>`;
@@ -285,16 +285,16 @@ let lastFocus=null;
 function show(){if($('#ov').hidden)lastFocus=document.activeElement;$('#ov').hidden=false;($('#dlg input:not([type=checkbox])')||$('#dlg .btn.pri')||$('#dlg button')).focus()}
 function close(){$('#ov').hidden=true;if(lastFocus&&document.contains(lastFocus))lastFocus.focus()}
 const headFor=(title,meta)=>`<h3 id="dt">${title}</h3><p class="meta">${meta}</p>`;
-/** 묶음이 여러 칸이면 "함께 예약한 칸 모두" 체크박스 */
-const groupChk=(k,verb)=>{const cs=companions(k);return cs.length>1?`<label class="chk"><input type="checkbox" id="fall" checked> 함께 예약한 ${cs.length}칸 모두 ${verb} <small>(${esc(describe(cs))})</small></label>`:''};
+/** 묶음이 여러 칸이면 "함께 점유한 칸 모두" 체크박스 */
+const groupChk=(k,verb)=>{const cs=companions(k);return cs.length>1?`<label class="chk"><input type="checkbox" id="fall" checked> 함께 점유한 ${cs.length}칸 모두 ${verb} <small>(${esc(describe(cs))})</small></label>`:''};
 const targetKeys=k=>$('#fall')?.checked?companions(k):[k];
 
 function openSlot(k){
   const r=rows[k];if(!r)return;
   const {kb,slot}=split(k),st=state(r),cs=companions(k),ed=API.canEdit(r);
-  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,LABEL[st])+`<div class="view"><dl><dt>사용자</dt><dd>${esc(r.name)}</dd><dt>목적</dt><dd>${esc(r.purpose)}</dd><dt>기간</dt><dd>${esc(r.start)} ~ ${esc(r.end)}</dd>${cs.length>1?`<dt>함께 예약</dt><dd>${cs.length}칸 · ${esc(describe(cs))}</dd>`:''}</dl></div>
-    <div class="acts">${st==='exp'?'<button class="btn del" id="bclr">비우기</button>':''}${ed?'<button class="btn del" id="bdel">예약 취소</button><button class="btn" id="bedit">수정</button>':''}<button class="btn pri" id="bclose">닫기</button></div>
-    ${!ed&&st!=='exp'?'<p class="note">예약한 사람만 수정·취소할 수 있어요.</p>':''}`;
+  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,LABEL[st])+`<div class="view"><dl><dt>사용자</dt><dd>${esc(r.name)}</dd><dt>목적</dt><dd>${esc(r.purpose)}</dd><dt>기간</dt><dd>${esc(r.start)} ~ ${esc(r.end)}</dd>${cs.length>1?`<dt>함께 점유</dt><dd>${cs.length}칸 · ${esc(describe(cs))}</dd>`:''}</dl></div>
+    <div class="acts">${st==='exp'?'<button class="btn del" id="bclr">비우기</button>':''}${ed?'<button class="btn del" id="bdel">점유 취소</button><button class="btn" id="bedit">수정</button>':''}<button class="btn pri" id="bclose">닫기</button></div>
+    ${!ed&&st!=='exp'?'<p class="note">점유한 사람만 수정·취소할 수 있어요.</p>':''}`;
   $('#bclose').onclick=close;
   if($('#bedit'))$('#bedit').onclick=()=>showForm(k);
   if($('#bdel'))$('#bdel').onclick=()=>confirmDel(k);
@@ -303,48 +303,48 @@ function openSlot(k){
 }
 function confirmDel(k){
   const {kb,slot}=split(k);
-  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,'예약 취소')+`<form id="f" novalidate><p>예약을 취소할까요? 되돌릴 수 없어요.</p>${groupChk(k,'취소')}${API.pin?pinField('fpin','예약 PIN 4자리'):''}<p class="err" id="err"></p>
-    <div class="acts"><button type="button" class="btn" id="bno">돌아가기</button><button class="btn pri" id="bs">예약 취소</button></div></form>`;
+  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,'점유 취소')+`<form id="f" novalidate><p>점유를 취소할까요? 되돌릴 수 없어요.</p>${groupChk(k,'취소')}${API.pin?pinField('fpin','점유 PIN 4자리'):''}<p class="err" id="err"></p>
+    <div class="acts"><button type="button" class="btn" id="bno">돌아가기</button><button class="btn pri" id="bs">점유 취소</button></div></form>`;
   $('#bno').onclick=()=>openSlot(k);
   submit(()=>API.cancel(targetKeys(k),$('#fpin')?.value),()=>API.pin&&!/^\d{4}$/.test($('#fpin').value)?'PIN 4자리를 입력해 주세요.':'');
   show();
 }
 function confirmClear(k){
   const {kb,slot}=split(k);
-  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,'기간 만료')+`<form id="f" novalidate><p>기간이 끝난 예약이에요. 칸을 비울까요? 되돌릴 수 없어요.</p>${groupChk(k,'비우기')}<p class="err" id="err"></p>
+  $('#dlg').innerHTML=headFor(`${KB[kb]} · ${slot}`,'기간 만료')+`<form id="f" novalidate><p>기간이 끝난 점유예요. 칸을 비울까요? 되돌릴 수 없어요.</p>${groupChk(k,'비우기')}<p class="err" id="err"></p>
     <div class="acts"><button type="button" class="btn" id="bno">돌아가기</button><button class="btn pri" id="bs">비우기</button></div></form>`;
   $('#bno').onclick=()=>openSlot(k);
   submit(()=>API.clear(targetKeys(k).filter(x=>state(rows[x])==='exp')),()=>'');
   show();
 }
-/** k가 있으면 수정, 없으면 선택한 칸들 새 예약 */
+/** k가 있으면 수정, 없으면 선택한 칸들 새 점유 */
 function showForm(k){
   const r=k?rows[k]:null,keys=r?null:[...sel].sort();
-  const title=r?`${KB[split(k).kb]} · ${split(k).slot}`:`${keys.length}칸 예약`;
-  const meta=r?'예약 수정':esc(describe(keys));
+  const start=r?.start||today();
+  const title=r?`${KB[split(k).kb]} · ${split(k).slot}`:`${keys.length}칸 점유`;
+  const meta=r?'점유 수정':esc(describe(keys));
   $('#dlg').innerHTML=headFor(title,meta)+`<form id="f" novalidate>
     ${r?groupChk(k,'수정'):''}
     <label class="fld"><span>사용자 이름</span><input id="fn" required maxlength="30" value="${esc(r?.name)}" autocomplete="name"></label>
     <label class="fld"><span>사용 목적</span><input id="fp" required maxlength="40" value="${esc(r?.purpose)}" placeholder="직접 입력하거나 아래에서 고르세요">
       <div class="chips">${PURPOSES.map(p=>`<button type="button" data-p="${p}">${p}</button>`).join('')}</div></label>
-    <div class="row2"><label class="fld"><span>시작일</span><input type="date" id="fs" required value="${esc(r?.start||today())}"></label>
-    <label class="fld"><span>종료일</span><input type="date" id="fe" required value="${esc(r?.end||'')}"></label></div>
-    ${API.pin?(r?pinField('fpin','예약 PIN 4자리'):pinField('fpin','PIN 4자리 정하기')+'<p class="note" style="margin:-6px 0 14px">선택한 칸 모두에 같은 PIN이 쓰여요. 수정·취소할 때 필요해요.</p>'):''}
+    <label class="fld"><span>종료일 <small style="color:var(--mute);font-weight:400">(시작일은 ${r?esc(r.start):'오늘'})</small></span><input type="date" id="fe" required min="${esc(start)}" value="${esc(r?.end||'')}"></label>
+    ${API.pin?(r?pinField('fpin','점유 PIN 4자리'):pinField('fpin','PIN 4자리 정하기')+'<p class="note" style="margin:-6px 0 14px">선택한 칸 모두에 같은 PIN이 쓰여요. 수정·취소할 때 필요해요.</p>'):''}
     <p class="err" id="err"></p>
-    <div class="acts"><button type="button" class="btn" id="bc">취소</button><button class="btn pri" id="bs">${r?'수정 저장':keys.length+'칸 예약하기'}</button></div></form>`;
+    <div class="acts"><button type="button" class="btn" id="bc">취소</button><button class="btn pri" id="bs">${r?'수정 저장':keys.length+'칸 점유하기'}</button></div></form>`;
   if(!r){try{const n=localStorage.getItem('sp7name');if(n)$('#fn').value=n}catch(e){}}
   $('#dlg').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{$('#fp').value=b.dataset.p});
   $('#bc').onclick=()=>r?openSlot(k):close();
   const val=()=>{
-    const name=$('#fn').value.trim(),purpose=$('#fp').value.trim(),start=$('#fs').value,end=$('#fe').value;
-    if(!name||!purpose||!start||!end)return'이름, 목적, 기간을 모두 채워 주세요.';
-    if(end<start)return'종료일이 시작일보다 빠를 수 없어요.';
+    const name=$('#fn').value.trim(),purpose=$('#fp').value.trim(),end=$('#fe').value;
+    if(!name||!purpose||!end)return'이름, 목적, 종료일을 모두 채워 주세요.';
+    if(end<start)return`종료일은 ${start} 이후여야 해요.`;
     if(API.pin&&!/^\d{4}$/.test($('#fpin').value))return'PIN은 숫자 4자리예요.';
-    if(!r){const taken=keys.filter(x=>rows[x]);if(taken.length)return`이미 예약된 칸이 있어요: ${describe(taken)}`}
+    if(!r){const taken=keys.filter(x=>rows[x]);if(taken.length)return`이미 점유된 칸이 있어요: ${describe(taken)}`}
     return'';
   };
   submit(async()=>{
-    const data={name:$('#fn').value.trim(),purpose:$('#fp').value.trim(),start:$('#fs').value,end:$('#fe').value,pin:$('#fpin')?.value};
+    const data={name:$('#fn').value.trim(),purpose:$('#fp').value.trim(),start,end:$('#fe').value,pin:$('#fpin')?.value};
     const j=r?await API.update(targetKeys(k),data):await API.reserve(keys,data);
     if(j.ok){try{localStorage.setItem('sp7name',data.name)}catch(e){}if(!r){sel.clear();render()}}
     return j;
@@ -357,7 +357,7 @@ function submit(run,check){
     const msg=check();if(msg){$('#err').textContent=msg;return}
     const b=$('#bs'),t=b.textContent;b.disabled=true;b.textContent='처리 중…';$('#err').textContent='';
     let j;try{j=await run()}catch(err){j={ok:false,error:'처리하지 못했어요. 연결을 확인해 주세요.'}}
-    if(j.ok)close();else{$('#err').textContent=j.error||'처리하지 못했어요.';b.disabled=false;b.textContent=t}
+    if(j.ok)close();else{$('#err').textContent=String(j.error||'처리하지 못했어요.').replace(/예약/g,'점유');b.disabled=false;b.textContent=t}
   };
 }
 
